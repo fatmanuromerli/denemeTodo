@@ -1,6 +1,5 @@
 
 // tüm elementleri seçmek
-
 const form = document.querySelector("#todoAddForm");
 const addInput = document.querySelector("#todoName");
 const todoList = document.querySelector(".list-group");
@@ -10,7 +9,6 @@ const clearButton = document.querySelector("#clearButton");
 const filterInput = document.querySelector("#todoSearch");
 
 let todos =[];
-
 
 
 runEvents();
