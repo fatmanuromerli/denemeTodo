@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FaToDoList</title>
+    <meta name="keyword" content="todolist">
+    <meta name="description" content="fatonun todolisti fatodolist">
+
+
+    <!--font google-->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap"
+        rel="stylesheet">
+    <!--cdnjs font-awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/global.css">
+    <link rel="stylesheet" href="css/main.css">
+    <!-- tablet görünümü için CSS-->
+    <link rel="stylesheet" media="(max-width:768px)" href="css/tablet.css">
+    <!-- telefon görünümü için CSS-->
+    <link rel="stylesheet" media="(max-width:500px)" href="css/telefon.css">
+
+    <!--bootstrap-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+
+
+</head>
+
+<body>
+    <header class="bg-dark-blue">
+        <div class="containerr">
+            <nav id="navbar">
+                <h1 id="fato">faTo<span>DoList</span></h1>
+
+                <!-- <ul>
+                    <li><a href="#yapilacak">TODOLİST</a></li>
+                </ul> -->
+
+            </nav>
+        </div>
+    </header>
+
+
+    <div id="home">
+        <img src="images/f.jpg" alt="todolist">
+        <div id="div1" class="name">
+            <div id="div2">
+                <form id="form"class="mt-5">
+                    <div id="div3">
+                        <div id="div4" class="col-100">
+                            <h4 style="color: #D2624C;">todo girin:</h4>
+                            <input id="todogir" type="text" class="form-control form-control-md" placeholder="Todo giriniz" >
+                            <button id="todoAddButton" type="submit" class="btn custom-button2 mt-3 ">
+                                Todo Ekleyin</button>
+                            <hr />
+
+
+                        </div>
+
+                        <div class="col-100" id="div5">
+                            <h4 style="color: #D2624C;">todo listeniz:</h4>
+                            <input  type="text" class="form-control form-control-md" id="todoara" placeholder="Todo arayınız">
+                            <ul id= "ul1" class="list-group">
+                                <br>
+                                <!--<li class="list-group-item d-flex justify-content-between">
+                                     <span style="color: black;">Todo 1</span> 
+                                     <div id="div6" class="d-flex">
+                                    
+                                             <button class="btn mr-2 custom-button" type="button">
+                                                <i class="fa-solid fa-square-check"></i>
+                                            </button>
+                                       
+                                            <button class="btn custom-button" type="button"> 
+                                                <i class="fas fa-trash-alt"></i> 
+                                            </button>
+                                 
+                                    </div> 
+                                </li>-->
+
+
+                            </ul>
+
+                            <a href="#" id="clearButton" class="btn custom-button3 mt-3">Tüm Todoları Temizle</a>
+                            <hr />
+                            <br>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+<script src="dom_deneme.js"></script>
+<!-- <script src="fatodo.js"></script> -->
+</body>
+
+</html>
