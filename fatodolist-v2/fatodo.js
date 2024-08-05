@@ -4,24 +4,24 @@ const listUl = document.getElementById("ul1");// ul seçildi
 let tasks = [];
 
 // window.onload ile sayfa yüklendiğinde kayıtlı görevleri göster
-window.onload = function() {
+window.onload = function () {
     showTasks();
 };
 
 
-function addTask(){
+function addTask() {
 
-    let isInboxSame=true;
-    tasks.forEach(control=>{
-        if(control.task==inputBox.value.trim()){
-            alert("VAR OLAN GÖREVİ EKLEYEMEZSİNİZ !!!!!");
-            isInboxSame=false;
+    let isInboxSame = true;
+    tasks.forEach(control => {
+        if (control.task == inputBox.value.trim()) {
+            alert("ZATEN VAR OLAN BİR GÖREVİ EKLEYEMEZSİNİZ");
+            isInboxSame = false;
         }
     })
 
-if (inputBox.value.trim() === '') {
-        alert("BOŞ TASK EKLENEMEZ !!!!!");
-    } else if(isInboxSame) {
+    if (inputBox.value.trim() === '') {
+        alert("BOŞ GÖREV EKLENEMEZ !!!!!");
+    } else if (isInboxSame) {
         // Yeni görev nesnesi oluştur
         const newTask = {
             task: inputBox.value,
@@ -40,10 +40,10 @@ if (inputBox.value.trim() === '') {
         // Input kutusunu temizle
         inputBox.value = '';
     }
-}  
+}
 
 
-function createTodoUI(inputBoxvalue){    // bu fonksiyon eklenen task oluşturma fonksiyonudur.
+function createTodoUI(inputBoxvalue) {    // bu fonksiyon eklenen task oluşturma fonksiyonudur.
     let li = document.createElement("li");
     li.className = "list-group-item d-flex justify-content-between";
     li.textContent = inputBoxvalue.task;
@@ -56,24 +56,24 @@ function createTodoUI(inputBoxvalue){    // bu fonksiyon eklenen task oluşturma
 
     const tikbuton = document.createElement("button");
     tikbuton.className = "btn mr-2 custom-button";
-    tikbuton.id="tikButon";
+    tikbuton.id = "tikButon";
     div6.appendChild(tikbuton);
 
     const itik = document.createElement("i");
     itik.className = "fa-solid fa-square-check";
-    itik.id="tik";
+    itik.id = "tik";
     tikbuton.appendChild(itik);
 
     const silbuton = document.createElement("button");
     silbuton.className = "btn mr-2 custom-button";
-    silbuton.id="silButon";
+    silbuton.id = "silButon";
     div6.appendChild(silbuton);
 
     const isil = document.createElement("i");
     isil.className = "fas fa-trash-alt";
-    isil.id="sil";
+    isil.id = "sil";
     silbuton.appendChild(isil);
-    
+
 
     li.addEventListener("click", function (e) {
         if (e.target.id === "tikButon") {
@@ -101,7 +101,7 @@ function checkedAll() {
 
         // tasks dizisindeki görevin checked durumunu güncelle
         tasks.forEach(task => {
-                task.checked = true;
+            task.checked = true;
         });
     });
 
@@ -131,10 +131,10 @@ function removeTask(taskObj, liElement) {
 function removeSelected() {
     const listItems = document.querySelectorAll(".list-group-item");
 
-    tasks.forEach(kontrol=>{ //remove tasktaki sistem gibi çalışıyor
-       if(kontrol.checked) {
+    tasks.forEach(kontrol => { //remove tasktaki sistem gibi çalışıyor
+        if (kontrol.checked) {
             tasks = tasks.filter(item => item !== kontrol);
-        }   
+        }
     })
 
 
@@ -186,20 +186,20 @@ function RemoveCheckedVisibility() {
 
 // FİLTRELEME İŞLEMİ
 const inputAra = document.getElementById("todoara"); // arama butonu seçildi
-inputAra.addEventListener('keyup',function (e) {
+inputAra.addEventListener('keyup', function (e) {
     const filterValue = e.target.value.toLowerCase().trim();
-   
+
     const todoLis = document.querySelectorAll(".list-group-item");
-  
-    if(todoLis.length>0){
-        todoLis.forEach(function(todo){
-            if(todo.textContent.toLowerCase().trim().includes(filterValue)){
-                    todo.setAttribute("style","display : block");
-            }else{
-                todo.setAttribute("style","display : none !important");
+
+    if (todoLis.length > 0) {
+        todoLis.forEach(function (todo) {
+            if (todo.textContent.toLowerCase().trim().includes(filterValue)) {
+                todo.setAttribute("style", "display : block");
+            } else {
+                todo.setAttribute("style", "display : none !important");
             }
         });
-    }else{
-        alert("warning","todo listesi boş");
+    } else {
+        alert("warning", "todo listesi boş");
     }
 });

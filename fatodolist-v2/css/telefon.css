@@ -1,0 +1,25 @@
+#navbar{
+    flex-direction: column;
+    padding-bottom:  0.5rem;
+    padding-top: 0.5rem;
+    overflow: hidden;
+    height: 80px;
+}
+
+.custom-button{
+    width: 50px;
+    height: 40px;
+    color: #D2624C;
+    background-color: #1F2F48;
+    font-size: 0vw;
+    font-weight: lighter;
+    text-align: center;
+}
+.custom-button:hover{
+    background-color: #D2624C;
+    color: #1F2F48;
+}
+
+
+
+
