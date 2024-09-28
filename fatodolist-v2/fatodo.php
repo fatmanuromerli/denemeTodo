@@ -21,7 +21,22 @@ try {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $gorevAdi = $_POST['gorevAdi'] ?? '';
         $checked = $_POST['checked'] ?? 0; // Varsayılan değer 0
-
+    
+        // Aynı görev adını kontrol et
+        $ayniGorevsql = "SELECT gorevAdi FROM gorevler";
+        $ayniGorev = $pdo->query($ayniGorevsql);
+        $ayni = $ayniGorev->fetchAll(PDO::FETCH_ASSOC); // Tüm görev adlarını çek
+    
+        foreach ($ayni as $gorev) {
+            $gorevAdiDb = $gorev['gorevAdi']; // Veritabanındaki görev adını al
+    
+            // Görev adını kıyasla, aynı görev adı varsa hata döndür
+            if (strtolower(trim($gorevAdiDb)) === strtolower(trim($gorevAdi))) {
+                echo json_encode(['hata' => 'Bu görev zaten mevcut.']); // Aynı görev adı bulundu
+                return null; // İşlemi sonlandır
+            }
+        }
+    
         // Veritabanına ekleme işlemi
         $sql = "INSERT INTO gorevler (gorevAdi, checked) VALUES (:gorevAdi, :checked)";
         $stmt = $pdo->prepare($sql);
@@ -29,12 +44,13 @@ try {
             'gorevAdi' => $gorevAdi,
             'checked' => $checked,
         ]);
-
+    
         // Ekleme işlemi başarılıysa, tüm görevleri döndür
         $stmt = $pdo->query("SELECT * FROM gorevler");
-        $todos = $stmt->fetchAll();
+        $todos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode($todos);
     }
+    
 
     // GET isteği ile görevleri çekme işlemi
     elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
@@ -86,14 +102,13 @@ try {
                 $sql = "DELETE FROM gorevler"; // Burada tüm görevleri sil
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute();
-        
+
                 // Başarılı bir yanıt döndür
                 echo json_encode(['success' => true]);
             } catch (PDOException $e) {
                 // Hata durumunda uygun bir yanıt döndür
                 echo json_encode(['success' => false, 'error' => 'Tüm görevler silinirken hata oluştu: ' . $e->getMessage()]);
             }
-        
         } else {
             $id = $data['id'] ?? ''; // Görev ID'sini al
             if ($id) {

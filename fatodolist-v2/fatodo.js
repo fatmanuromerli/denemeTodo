@@ -57,9 +57,17 @@ async function addTask() {
             throw new Error('Ağ hatası: ' + response.status);
         }
 
-        const todos = await response.json(); // Yeni görevleri al
-        displayTodos(todos); // Görevleri görüntüle
-        inputBox.value = ''; // Input kutusunu temizle
+        const result = await response.json(); // JSON formatında yanıtı al
+
+        // Eğer "hata" anahtarı varsa aynı görev var demektir
+        if (result.hata) {
+            confirm(result.hata); // Hata mesajını göster
+            inputBox.value = '';
+        } else {
+            // Görev başarılı şekilde eklenmişse görevleri güncelle
+            displayTodos(result); // Görevleri görüntüle
+            inputBox.value = ''; // Input kutusunu temizle
+        }
     } catch (error) {
         console.error('Görev eklenirken hata oluştu:', error);
     }
