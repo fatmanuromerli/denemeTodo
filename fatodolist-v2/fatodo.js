@@ -214,7 +214,7 @@ inputAra.addEventListener("input", async function() {
 
 
 // Tüm görevleri silme fonksiyonu
-// Tüm görevleri silme fonksiyonu
+
 async function removeAll() {
     if (confirm("Tüm görevleri silmek istediğinize emin misiniz?")) { // Kullanıcı onayı
         try {
