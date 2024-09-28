@@ -1,54 +1,102 @@
-const inputBox = document.getElementById("todogir");// task girişi alınan input seçildi
-const listUl = document.getElementById("ul1");// ul seçildi
+const inputBox = document.getElementById("todogir"); // Task girişi alınan input
+const listUl = document.getElementById("ul1"); // UL öğesi
+const addButton = document.getElementById("todoAddButton"); // Ekle butonu
+const inputAra = document.getElementById("todoara"); // Arama kutusu
 
-let tasks = [];
-
-// window.onload ile sayfa yüklendiğinde kayıtlı görevleri göster
+// Sayfa yüklendiğinde görevleri çekmek için
 window.onload = function () {
-    showTasks();
+    fetchAllTodos();
 };
 
+// Tüm görevleri çekmek için
+async function fetchAllTodos() {
+    try {
+        const response = await fetch('http://localhost/fatodo/fatodo.php', {
+            method: 'GET', // Verileri almak için GET isteği
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        });
 
-function addTask() {
-
-    let isInboxSame = true;
-    tasks.forEach(control => {
-        if (control.task == inputBox.value.trim()) {
-            alert("ZATEN VAR OLAN BİR GÖREVİ EKLEYEMEZSİNİZ");
-            isInboxSame = false;
+        if (!response.ok) {
+            throw new Error('Ağ hatası: ' + response.status);
         }
-    })
 
-    if (inputBox.value.trim() === '') {
-        alert("BOŞ GÖREV EKLENEMEZ !!!!!");
-    } else if (isInboxSame) {
-        // Yeni görev nesnesi oluştur
-        const newTask = {
-            task: inputBox.value,
-            checked: false
-        };
-
-        // Yeni görevi tasks dizisine ekle
-        tasks.push(newTask);
-
-        // localStorage'a güncellenmiş görev listesini kaydet
-        saveData();
-
-        // Yeni görevi UI'ya ekle
-        createTodoUI(newTask);
-
-        // Input kutusunu temizle
-        inputBox.value = '';
+        const todos = await response.json(); // JSON verisini al
+        displayTodos(todos); // Görevleri görüntüle
+        return todos; // Burada todos'u döndür
+        
+    } catch (error) {
+        console.error('Bir hata oluştu:', error);
+        return []; // Hata durumunda boş bir dizi döndür
     }
 }
 
 
-function createTodoUI(inputBoxvalue) {    // bu fonksiyon eklenen task oluşturma fonksiyonudur.
+// Görev ekleme fonksiyonu
+async function addTask() {
+    const gorevAdi = inputBox.value.trim(); // Input değerini al
+    if (!gorevAdi) {
+        alert("Lütfen bir görev girin."); // Boşsa uyarı göster
+        return; // İşlemi durdur
+    }
+
+    try {
+        const response = await fetch('http://localhost/fatodo/fatodo.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                gorevAdi: gorevAdi,
+                checked: 0 // Varsayılan olarak unchecked
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Ağ hatası: ' + response.status);
+        }
+
+        const result = await response.json(); // JSON formatında yanıtı al
+
+        // Eğer "hata" anahtarı varsa aynı görev var demektir
+        if (result.hata) {
+            confirm(result.hata); // Hata mesajını göster
+            inputBox.value = '';
+        } else {
+            // Görev başarılı şekilde eklenmişse görevleri güncelle
+            displayTodos(result); // Görevleri görüntüle
+            inputBox.value = ''; // Input kutusunu temizle
+        }
+    } catch (error) {
+        console.error('Görev eklenirken hata oluştu:', error);
+    }
+}
+
+// Görevleri HTML'de listelemek için
+function displayTodos(todos) {
+    const todoList = document.getElementById('ul1');
+    todoList.innerHTML = ''; // Önceki listeyi temizle
+
+    todos.forEach(todo => {
+        createTodoUI(todo);
+    });
+}
+
+// createTodoUI fonksiyonu
+function createTodoUI(inputBoxvalue) {
     let li = document.createElement("li");
     li.className = "list-group-item d-flex justify-content-between";
-    li.textContent = inputBoxvalue.task;
-    // li.id = "li";
-    listUl.appendChild(li);
+    li.textContent = inputBoxvalue.gorevAdi; // gorevAdi'yi al
+    li.id = `task-${inputBoxvalue.id}`; // Her görev için benzersiz bir ID ayarlayın
+
+    // Eğer görev checked durumundaysa, üzerini çizin
+    if (inputBoxvalue.checked === 1) {
+        li.style.textDecoration = "line-through"; // Üstü çizili yap
+    }
+
+    const todoList = document.getElementById('ul1');
+    todoList.appendChild(li);
 
     const div6 = document.createElement("div");
     div6.className = "div6";
@@ -56,7 +104,7 @@ function createTodoUI(inputBoxvalue) {    // bu fonksiyon eklenen task oluşturm
 
     const tikbuton = document.createElement("button");
     tikbuton.className = "btn mr-2 custom-button";
-    tikbuton.id = "tikButon";
+    tikbuton.id = `tikButon-${inputBoxvalue.id}`; // Her butona benzersiz bir ID veriyoruz
     div6.appendChild(tikbuton);
 
     const itik = document.createElement("i");
@@ -66,7 +114,7 @@ function createTodoUI(inputBoxvalue) {    // bu fonksiyon eklenen task oluşturm
 
     const silbuton = document.createElement("button");
     silbuton.className = "btn mr-2 custom-button";
-    silbuton.id = "silButon";
+    silbuton.id = `silButon-${inputBoxvalue.id}`; // Her butona benzersiz bir ID veriyoruz
     div6.appendChild(silbuton);
 
     const isil = document.createElement("i");
@@ -74,132 +122,209 @@ function createTodoUI(inputBoxvalue) {    // bu fonksiyon eklenen task oluşturm
     isil.id = "sil";
     silbuton.appendChild(isil);
 
-
-    li.addEventListener("click", function (e) {
-        if (e.target.id === "tikButon") {
-            toggleChecked(inputBoxvalue, tikbuton.parentElement.parentElement);
-        } else if (e.target.id === "silButon") {
-            removeTask(inputBoxvalue, silbuton.parentElement.parentElement);
-        }
+    // Sil butonuna tıklama olayı ekleme
+    silbuton.addEventListener("click", async () => {
+        await deleteTask(inputBoxvalue.id); // Görev ID'sini silme fonksiyonuna gönder
     });
 
+    // Tik butonuna tıklama olayı ekleme
+    tikbuton.addEventListener("click", async () => {
+        const newChecked = inputBoxvalue.checked === 1 ? 0 : 1; // Eğer şu an checked 1 ise, 0 yap, aksi takdirde 1 yap
+        await toggleChecked(inputBoxvalue.id, newChecked); // Görev ID'sini güncelleme fonksiyonuna gönder
 
+        // Burada DOM'u doğrudan güncelleyelim
+        li.style.textDecoration = newChecked === 1 ? "line-through" : "none"; // Üstü çizili yap veya kaldır
+        inputBoxvalue.checked = newChecked; // inputBoxvalue'yi güncelle
+    });
 }
 
-function removeAll() {
-    tasks = [];
-    localStorage.clear();
-    listUl.innerHTML = '';
-    RemoveCheckedVisibility();
-}
 
-function checkedAll() {
-    const listItems = document.querySelectorAll(".list-group-item");
-
-    listItems.forEach(item => {
-        item.classList.add("checked"); // Önyüzde görevi checked yap
-
-        // tasks dizisindeki görevin checked durumunu güncelle
-        tasks.forEach(task => {
-            task.checked = true;
+// Görev checked durumunu güncelleme fonksiyonu
+async function toggleChecked(id, newChecked) {
+    try {
+        const response = await fetch('http://localhost/fatodo/fatodo.php', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                id: id, // İlgili görev ID'sini ekleyin
+                operation: 'check_item',
+                checked: newChecked
+            })
         });
-    });
 
-    // localStorage'a güncellenmiş tasks dizisini kaydet
-    saveData();
-}
-
-function toggleChecked(taskObj, liElement) {
-
-    taskObj.checked = !taskObj.checked;
-    liElement.classList.toggle("checked");
-    saveData();
-}
-
-
-function removeTask(taskObj, liElement) {
-    //...burada item adında bir listeye taskObj hariç geri kalan içerikleri dizi olarak yollarız
-    // bu sayede bizim çarpıya tıkladığımız taskObj hariç geri kalan içerikler item adlı
-    //diziye kaydedilir. biz de bunu en sonunda tasks olarak yeni dizimiz varsayıyoruz ve
-    //save data ile de bunu kaydettik 
-    tasks = tasks.filter(item => item !== taskObj);
-    liElement.remove();
-    saveData();
-}
-
-
-function removeSelected() {
-    const listItems = document.querySelectorAll(".list-group-item");
-
-    tasks.forEach(kontrol => { //remove tasktaki sistem gibi çalışıyor
-        if (kontrol.checked) {
-            tasks = tasks.filter(item => item !== kontrol);
+        if (!response.ok) {
+            throw new Error('Ağ hatası: ' + response.status);
         }
-    })
+
+        const result = await response.json();
+        console.log(result);
+    } catch (error) {
+        console.error('Görev durumunu güncellerken hata oluştu:', error);
+    }
+}
 
 
-    listItems.forEach(item => {
-        if (item.classList.contains("checked")) {
-            tasks = tasks.filter(task => task.task !== item.textContent.trim());
-            item.remove();
+// Görev silme fonksiyonu
+async function deleteTask(id) {
+    try {
+        const response = await fetch('http://localhost/fatodo/fatodo.php', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({ 
+                id: id,
+                operation: 'delete_onetask' 
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Ağ hatası: ' + response.status);
         }
-    });
 
-    saveData();
-    RemoveCheckedVisibility();
-}
-
-// local storageye kaydediyor
-function saveData() {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-    RemoveCheckedVisibility();
-}
-
-
-// bu fonksiyon yerel depolamadan görevleri alıp arayüzdeki listeyi günceller ve işaretlenmiş görevleri uygun şekilde işaretler.
-function showTasks() {
-    tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-
-    tasks.forEach(task => {
-        createTodoUI(task);
-        if (task.checked) {
-            const li = listUl.lastElementChild;
-            li.classList.add("checked");
+        // Görev elemanını arayüzden kaldır
+        const taskElement = document.getElementById(`task-${id}`); // ID'yi burada güncelledik
+        // console.log("silinen : ", taskElement);
+        if (taskElement) {
+            taskElement.remove(); // Görev elemanını arayüzden kaldır
         }
-    });
-    RemoveCheckedVisibility();
+    } catch (error) {
+        console.error('Görev silinirken hata oluştu:', error);
+    }
 }
 
-function RemoveCheckedVisibility() {
-    // console.log("check test")
 
-    const listItems = document.querySelectorAll(".list-group-item");
-    let isAnyChecked = false;
 
-    listItems.forEach(item => {
-        if (item.classList.contains("checked")) {
-            isAnyChecked = true;
-        }
-    });
 
-}
-
-// FİLTRELEME İŞLEMİ
-const inputAra = document.getElementById("todoara"); // arama butonu seçildi
-inputAra.addEventListener('keyup', function (e) {
-    const filterValue = e.target.value.toLowerCase().trim();
-
-    const todoLis = document.querySelectorAll(".list-group-item");
-
-    if (todoLis.length > 0) {
-        todoLis.forEach(function (todo) {
-            if (todo.textContent.toLowerCase().trim().includes(filterValue)) {
-                todo.setAttribute("style", "display : block");
-            } else {
-                todo.setAttribute("style", "display : none !important");
+// Arama fonksiyonu
+inputAra.addEventListener("input", async function() {
+    const aramaKelimesi = inputAra.value; // Arama kelimesini al
+    try {
+        const response = await fetch(`http://localhost/fatodo/fatodo.php?searchTerm=${encodeURIComponent(aramaKelimesi)}`, {
+            method: 'GET', // Verileri almak için GET isteği
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
             }
         });
-    } else {
-        alert("warning", "todo listesi boş");
+
+        if (!response.ok) {
+            throw new Error('Ağ hatası: ' + response.status);
+        }
+
+        const todos = await response.json(); // JSON verisini al
+        displayTodos(todos); // Görevleri görüntüle
+    } catch (error) {
+        console.error('Bir hata oluştu:', error);
     }
 });
+
+
+// Tüm görevleri silme fonksiyonu
+
+async function removeAll() {
+    if (confirm("Tüm görevleri silmek istediğinize emin misiniz?")) { // Kullanıcı onayı
+        try {
+            const response = await fetch('http://localhost/fatodo/fatodo.php', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams({
+                    operation: 'delete_all',
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Ağ hatası: ' + response.status);
+            }
+
+            const result = await response.json(); // Sonucu kontrol et
+            console.log('Silme sonucu:', result); // Sonucu kontrol etmek için log ekleyin
+
+            if (result.success) {
+                displayTodos([]); // Arayüzde görevleri temizle
+            } else {
+                console.error('Hata:', result.error); // Hata mesajını görüntüle
+            }
+        } catch (error) {
+            console.error('Tüm görevler silinirken hata oluştu:', error);
+        }
+    }
+}
+
+
+
+
+// Tüm görevleri "yapıldı" olarak işaretleme fonksiyonu
+async function checkedAll() {
+    try {
+        // Veritabanındaki tüm görevlerin checked değerlerini 1 yap
+        const response = await fetch('http://localhost/fatodo/fatodo.php', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                checked: 1 // Tüm görevleri yapıldı olarak işaretle
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Ağ hatası: ' + response.status);
+        }
+
+        const todos = await response.json(); // Güncellenmiş görevleri al
+        displayTodos(todos); // Görevleri görüntüle
+    } catch (error) {
+        console.error('Tüm görevler işaretlenirken hata oluştu:', error);
+    }
+}
+
+// Sadece üstü çizili görevleri sil fonksiyonu
+async function removeSelected() {
+    try {
+        const response = await fetch('http://localhost/fatodo/fatodo.php', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams({
+                operation: 'check_delete' // operation değerini burada gönderiyoruz
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Ağ hatası: ' + response.status);
+        }
+
+        const result = await response.json();
+        if (result.success) {
+            console.log('Görevler başarıyla silindi.');
+
+            // Tüm görevleri tekrar çek
+            const todos = await fetchAllTodos(); // Tüm görevleri tekrar çek
+            console.log('Todos:', todos); // Todos değerini kontrol et
+
+            if (todos && Array.isArray(todos)) { // Eğer todos tanımlıysa ve bir dizi ise
+                // Sadece checked değeri 0 olan görevleri filtrele
+                const filteredTodos = todos.filter(todo => todo.checked === 0);
+                displayTodos(filteredTodos); // Arayüzde güncelle
+            } else {
+                console.error('Görevler alınamadı veya geçersiz format:', todos);
+            }
+        } else {
+            console.error(result.error); // Hata mesajı
+        }
+    } catch (error) {
+        console.error('Görevler silinirken hata oluştu:', error);
+    }
+}
+
+
+
+
+
+
+
